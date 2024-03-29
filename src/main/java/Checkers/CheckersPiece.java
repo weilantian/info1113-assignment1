@@ -28,66 +28,76 @@ public class CheckersPiece {
 	public boolean isKing() {
 		return this.isKing;
 	}
-	
-	public Set<Move> getAvailableMoves(Cell[][] board) {
-		//get all available moves for this piece
-		// We have to store the 2stops, and 1 stop moves in the Cell class so it understands the moves, or maybe it is a bad idea becuase the piece is the one that knows how to move
-	
-		Set<Move> moves = new HashSet<>();
 
-	
-		Set<Cell> possibleMoves = new HashSet<>();
-
-		if (this.colour == 'w' || this.isKing) {
-			if (Cell.isValidCellPosition(this.position.getX() + 1, this.position.getY() + 1)) {
-				possibleMoves.add(board[this.position.getX() + 1][this.position.getY() + 1]);
-			}
+	private Move getNormalMoveIfValid(Cell[][] board,int xOffset,int yOffset) {
 
 
-			if (Cell.isValidCellPosition(this.position.getX() - 1, this.position.getY() + 1 )) {
-				possibleMoves.add(board[this.position.getX() - 1][this.position.getY() + 1]);
-			}
-
-			//Check if there is any jump over move
-			if (Cell.isValidCellPosition(this.position.getX() + 2, this.position.getY() + 2)) {
-				Cell jumpOverDestination = board[this.position.getX() + 2][this.position.getY() + 2];
-				Cell jumpOverCell = Cell.getJumpOverCell(this.position, jumpOverDestination);
-				if (jumpOverCell != null && jumpOverDestination.getPiece()==null) {
-					moves.add(new Move(this,jumpOverDestination,jumpOverCell.getPiece()));
-				}
-			}
-
-		}
-
-		if (this.colour == 'b' || this.isKing) {
-			if (Cell.isValidCellPosition(this.position.getX() + 1, this.position.getY() - 1)) {
-				possibleMoves.add(board[this.position.getX() + 1][this.position.getY() - 1]);
-			}
-
-			if (Cell.isValidCellPosition(this.position.getX() - 1, this.position.getY() - 1)) {
-				possibleMoves.add(board[this.position.getX() - 1][this.position.getY() - 1]);
+		// Print current position
+		if (Cell.isValidCellPosition(this.position.getX()+xOffset, this.position.getY()+yOffset)) {
+			Cell toCell = board[this.position.getY()+yOffset][this.position.getX()+xOffset];
+			if (toCell.getPiece() == null) {
+				//Print the cell axis
+				
+				return new Move(this, toCell, null);
 			}
 		}
-
-		// Add jump over moves if the piece can jump over another piece
-
-		
-
-
-		
-		
-
 		return null;
 	}
 
-	private Cell getJumpOverCell(Cell destination) {
-		// Magic function for getting the cell that is jumped over
-		int x = (this.position.getX() + destination.getX())/2;
-		int y = (this.position.getY() + destination.getY())/2;
+	private Move getJumpOverMoveIfValid(Cell[][] board, int xOffset, int yOffset) {
+		if (!Cell.isValidCellPosition(this.position.getX()+xOffset, this.position.getY()+yOffset)) return null;
+		Cell toCell = board[this.position.getY()+yOffset][this.position.getX()+xOffset];
+		if (toCell.getPiece() != null) return null;
 
+
+		int jumpOverX = this.position.getX() + xOffset/2;
+		int jumpOverY = this.position.getY() + yOffset/2;
+		if (!Cell.isValidCellPosition(jumpOverX, jumpOverY)) return null;
+		Cell cellToBeJumpOver = board[jumpOverY][jumpOverX];
+		if (cellToBeJumpOver.getPiece() == null) return null;
+
+
+
+		// Cell cellToBeJumpOver = board[this.position.getY()+yOffset/2][this.position.getX()+xOffset/2];
+		// if (cellToBeJumpOver!=null) System.out.println("Cell to be jumped over: " + cellToBeJumpOver.getX() + " " + cellToBeJumpOver.getY());
+		// if (cellToBeJumpOver == null) return null;
+		//if (cellToBeJumpOver.getPiece() == null) return null;
+		return new Move(this, toCell, cellToBeJumpOver.getPiece());
 
 	}
 	
+	public Set<Move> getAvailableMoves(Cell[][] board) {
+
+		Set<Move> availableMoves = new HashSet<Move>();
+
+		// CHECK all the moves
+
+		// Check the normal moves
+
+		for (int i = -1; i <= 1; i+=2) {
+			for (int j = -1; j <= 1; j+=2) {
+				Move move = getNormalMoveIfValid(board,i,j);
+				if (move != null) {
+							availableMoves.add(move);
+							}		
+
+			}
+		}
+
+		// Check the jump over moves
+		for (int i = -2; i <= 2; i+=4) {
+			for (int j = -2; j <= 2; j+=4) {
+				Move move = getJumpOverMoveIfValid(board,i,j);
+				if (move != null) {
+					availableMoves.add(move);
+				}
+			}
+		}
+
+		return availableMoves;
+	}
+
+
 	public void capture() {
 		//capture this piece
 		this.isCaptured = true;

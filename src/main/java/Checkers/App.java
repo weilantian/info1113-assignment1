@@ -81,7 +81,7 @@ public class App extends PApplet {
 
         for (int i = 0; i < board.length; i++) {
             for (int i2 = 0; i2 < board[i].length; i2++) {
-                board[i][i2] = new Cell(i2,i);
+                board[i][i2] = new Cell(i2,i, board);
 
                 if ((i2+i) % 2 == 1) {
                     if (i < 3) {
@@ -131,9 +131,30 @@ public class App extends PApplet {
 			}
 			
 			//TODO: highlight available moves for current piece
+
+            //Reset all cells to not be selectable
+
+            for (int i = 0; i < board.length; i++) {
+                for (int i2 = 0; i2 < board[i].length; i2++) {
+                    board[i][i2].setAvailableMove(null);
+                }
+            }
+            Set<Move> availableMoves = currentSelected.getAvailableMoves(board);
+
+            for (Move move : availableMoves) {
+                move.getDestination().setAvailableMove(move);
+            }
+            
        
 
-		}
+		} else if (clicked.isCurrentUserSelectable()) {
+            // Execute the move
+            Move move = clicked.getAvailableMove();
+            move.execute();
+            
+        }
+
+
 		
 		//TODO: Check if user clicked on an available move - move the selected piece there. 
 		//TODO: Remove captured pieces from the board
@@ -163,7 +184,10 @@ public class App extends PApplet {
 				if (currentSelected != null && board[i][i2].getPiece() == currentSelected) {
 					this.setFill(1, (i2+i) % 2);
 					this.rect(i2*App.CELLSIZE, i*App.CELLSIZE, App.CELLSIZE, App.CELLSIZE);
-				} else if ((i2+i) % 2 == 1) {
+				} else if (board[i][i2].isCurrentUserSelectable()) {
+                    this.setFill(2, (i2+i) % 2);
+                    this.rect(i2*App.CELLSIZE, i*App.CELLSIZE, App.CELLSIZE, App.CELLSIZE);
+                } else if ((i2+i) % 2 == 1) {
 					//black cell
 					this.fill(BLACK_RGB[0], BLACK_RGB[1], BLACK_RGB[2]);
 					this.rect(i2*App.CELLSIZE, i*App.CELLSIZE, App.CELLSIZE, App.CELLSIZE);
