@@ -10,6 +10,8 @@ public class Cell {
 	private int y;
 	private CheckersPiece piece;
 	private Cell[][] board;
+
+	private Move availableMove;
 	
 	public Cell(int x, int y, Cell[][] board) {
 		this.x = x;
@@ -40,6 +42,14 @@ public class Cell {
 	public int getY() {
 		return this.y;
 	}
+
+	public void setAvailableMove(Move v) {
+		this.availableMove = v;
+	}
+
+	public Move getAvailableMove() {
+		return this.availableMove;
+	}
 	
 	public void setPiece(CheckersPiece p) {
 		this.piece = p;
@@ -48,37 +58,109 @@ public class Cell {
 		}
 	}
 
-	public Set<Cell> getNeibourCells() {
-		Set<Cell> neibourCells = new HashSet<>();
-		if (this.x > 0) {
-			if (this.y > 0) {
-				neibourCells.add(this.board[this.x-1][this.y-1]);
-				if (this.y > 1) {
-					neibourCells.add(this.board[this.x-2][this.y-2]);
-				}
-			}
-			if (this.y < 7) {
-				neibourCells.add(this.board[this.x-1][this.y+1]);
-				if (this.y < 6) {
-					neibourCells.add(this.board[this.x-2][this.y+2]);
-				}
-			}
-		}
-		if (this.x < 7) {
-			if (this.y > 0) {
-				neibourCells.add(this.board[this.x+1][this.y-1]);
-				if (this.y > 1) {
-					neibourCells.add(this.board[this.x+2][this.y-2]);
-				}
-			}
-			if (this.y < 7) {
-				neibourCells.add(this.board[this.x+1][this.y+1]);
-				if (this.y < 6) {
-					neibourCells.add(this.board[this.x+2][this.y+2]);
-				}
+	public boolean isCurrentUserSelectable() {
+		return this.availableMove != null;
+	}
+
+	public Set<NeibourCell> getNeibourCells() {
+
+
+		Set<NeibourCell> neibourCells = new HashSet<NeibourCell>();
+
+		// Normal moves
+
+		// TOP,LEFT
+
+		if (isValidCellPosition(this.x - 1, this.y - 1)) {
+			Cell toCell = this.board[this.y - 1][this.x - 1];
+			if (toCell.getPiece() == null) {
+				neibourCells.add(new NeibourCell(this, toCell, null));
 			}
 		}
+
+		// TOP,RIGHT
+		if (isValidCellPosition(this.x + 1, this.y - 1)) {
+			Cell toCell = this.board[this.y - 1][this.x + 1];
+			if (toCell.getPiece() == null) {
+				neibourCells.add(new NeibourCell(this, toCell, null));
+			}
+		}
+
+		// BOTTOM,LEFT
+
+		if (isValidCellPosition(this.x - 1, this.y + 1)) {
+			Cell toCell = this.board[this.y + 1][this.x - 1];
+			if (toCell.getPiece() == null) {
+				neibourCells.add(new NeibourCell(this, toCell, null));
+			}
+		}
+
+		// BOTTOM,RIGHT
+
+		if (isValidCellPosition(this.x + 1, this.y + 1)) {
+			Cell toCell = this.board[this.y + 1][this.x + 1];
+			if (toCell.getPiece() == null) {
+				neibourCells.add(new NeibourCell(this, toCell, null));
+			}
+		}
+
+		// Jump over moves
+
+		// TOP,LEFT
+		if (isValidCellPosition(this.x-2, this.y-2)) {
+			Cell toCell = this.board[this.y - 2][this.x - 2];
+
+
+			if (toCell.getPiece() == null && this.getJumpOVerCell(toCell).getPiece() != null){
+				Cell jumpOverCell = this.getJumpOVerCell(toCell);
+				neibourCells.add(new NeibourCell(this, toCell, jumpOverCell));
+			}
+		}
+
+		// TOP,RIGHT
+
+		if (isValidCellPosition(this.x+2, this.y-2)) {
+			Cell toCell = this.board[this.y - 2][this.x + 2];
+
+			if (toCell.getPiece() == null  && this.getJumpOVerCell(toCell).getPiece() != null) {
+				Cell jumpOverCell = this.getJumpOVerCell(toCell);
+				neibourCells.add(new NeibourCell(this, toCell, jumpOverCell));
+			}
+		}
+
+		// BOTTOM,LEFT
+
+		if (isValidCellPosition(this.x-2, this.y+2)) {
+			Cell toCell = this.board[this.y + 2][this.x - 2];
+
+			if (toCell.getPiece() == null  && this.getJumpOVerCell(toCell).getPiece() != null) {
+				Cell jumpOverCell = this.getJumpOVerCell(toCell);
+				neibourCells.add(new NeibourCell(this, toCell, jumpOverCell));
+			}
+		}
+
+		// BOTTOM,RIGHT
+
+		if (isValidCellPosition(this.x+2, this.y+2)) {
+			Cell toCell = this.board[this.y + 2][this.x + 2];
+
+			if (toCell.getPiece() == null  && this.getJumpOVerCell(toCell).getPiece() != null) {
+				Cell jumpOverCell = this.getJumpOVerCell(toCell);
+				neibourCells.add(new NeibourCell(this, toCell, jumpOverCell));
+			}
+		}
+
+
 		return neibourCells;
+		
+
+	}
+
+	public Cell getJumpOVerCell(Cell destinationCell) {
+		// Magic function for getting the cell that is jumped over
+		int x = (this.getX() + destinationCell.getX()) / 2;
+		int y = (this.getY() + destinationCell.getY()) / 2;
+		return this.board[y][x];
 	}
 	
 	public CheckersPiece getPiece() {

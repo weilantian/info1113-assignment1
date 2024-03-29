@@ -1,3 +1,7 @@
 {
-    "java.compile.nullAnalysis.mode": "automatic"
+  "java.compile.nullAnalysis.mode": "automatic",
+  "java.import.gradle.home": "/Users/weilantian/.sdkman/candidates/gradle/current",
+  "java.import.gradle.java.home": "/Users/weilantian/.sdkman/candidates/java/current",
+  "maven.terminal.useJavaHome": true,
+  "java.import.gradle.user.home": "/Users/weilantian/.sdkman/candidates/gradle/current"
 }

@@ -12,6 +12,10 @@ class Move {
         this.capturedPiece = capturePiece;
 
     }
+
+    public Cell getDestination() {
+        return this.destination;
+    }
     
     public void execute() {
         if (this.capturedPiece != null) {
@@ -19,7 +23,7 @@ class Move {
         }
 
         this.piece.getPosition().setPiece(null);
-        this.destination.setPiece(this.capturedPiece);
+        this.destination.setPiece(this.piece);
     }
     
 
