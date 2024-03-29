@@ -1,9 +1,11 @@
 package Checkers;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class CheckersPiece {
-
+	private boolean isKing = false;
+	private boolean isCaptured = false;
 	private char colour;
 	private Cell position;
 	
@@ -22,19 +24,79 @@ public class CheckersPiece {
 	public Cell getPosition() {
 		return this.position;
 	}
+
+	public boolean isKing() {
+		return this.isKing;
+	}
 	
-	public Set<Cell> getAvailableMoves(Cell[][] board) {
-		//TODO: Get available moves for this piece depending on the board layout, and whether this piece is a king or not
-		//How to record if the move is a capture or not? Maybe make a new class 'Move' that stores this information, along with the captured piece?
+	public Set<Move> getAvailableMoves(Cell[][] board) {
+		//get all available moves for this piece
+		// We have to store the 2stops, and 1 stop moves in the Cell class so it understands the moves, or maybe it is a bad idea becuase the piece is the one that knows how to move
+	
+		Set<Move> moves = new HashSet<>();
+
+	
+		Set<Cell> possibleMoves = new HashSet<>();
+
+		if (this.colour == 'w' || this.isKing) {
+			if (Cell.isValidCellPosition(this.position.getX() + 1, this.position.getY() + 1)) {
+				possibleMoves.add(board[this.position.getX() + 1][this.position.getY() + 1]);
+			}
+
+
+			if (Cell.isValidCellPosition(this.position.getX() - 1, this.position.getY() + 1 )) {
+				possibleMoves.add(board[this.position.getX() - 1][this.position.getY() + 1]);
+			}
+
+			//Check if there is any jump over move
+			if (Cell.isValidCellPosition(this.position.getX() + 2, this.position.getY() + 2)) {
+				Cell jumpOverDestination = board[this.position.getX() + 2][this.position.getY() + 2];
+				Cell jumpOverCell = Cell.getJumpOverCell(this.position, jumpOverDestination);
+				if (jumpOverCell != null && jumpOverDestination.getPiece()==null) {
+					moves.add(new Move(this,jumpOverDestination,jumpOverCell.getPiece()));
+				}
+			}
+
+		}
+
+		if (this.colour == 'b' || this.isKing) {
+			if (Cell.isValidCellPosition(this.position.getX() + 1, this.position.getY() - 1)) {
+				possibleMoves.add(board[this.position.getX() + 1][this.position.getY() - 1]);
+			}
+
+			if (Cell.isValidCellPosition(this.position.getX() - 1, this.position.getY() - 1)) {
+				possibleMoves.add(board[this.position.getX() - 1][this.position.getY() - 1]);
+			}
+		}
+
+		// Add jump over moves if the piece can jump over another piece
+
+		
+
+
+		
+		
+
 		return null;
+	}
+
+	private Cell getJumpOverCell(Cell destination) {
+		// Magic function for getting the cell that is jumped over
+		int x = (this.position.getX() + destination.getX())/2;
+		int y = (this.position.getY() + destination.getY())/2;
+
+
 	}
 	
 	public void capture() {
 		//capture this piece
+		this.isCaptured = true;
+		this.position.setPiece(null);
 	}
 	
 	public void promote() {
 		//promote this piece
+		this.isKing = true;
 	}
 	
 	//draw the piece

@@ -131,10 +131,13 @@ public class App extends PApplet {
 			}
 			
 			//TODO: highlight available moves for current piece
+       
+
 		}
 		
 		//TODO: Check if user clicked on an available move - move the selected piece there. 
 		//TODO: Remove captured pieces from the board
+
 		//TODO: Check if piece should be promoted and promote it
 		//TODO: Then it's the other player's turn.
     }
