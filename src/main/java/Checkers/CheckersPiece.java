@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class CheckersPiece {
-	private boolean isKing = false;
+	private boolean isKing = true;
 	private boolean isCaptured = false;
 	private char colour;
 	private Cell position;
@@ -15,6 +15,10 @@ public class CheckersPiece {
 	
 	public char getColour() {
 		return this.colour;
+	}
+
+	public boolean isCaptured() {
+		return this.isCaptured;
 	}
 	
 	public void setPosition(Cell p) {
@@ -34,6 +38,11 @@ public class CheckersPiece {
 
 		// Print current position
 		if (Cell.isValidCellPosition(this.position.getX()+xOffset, this.position.getY()+yOffset)) {
+
+
+		if (this.colour == 'w' && !this.isKing && yOffset == -1) return null;
+		if (this.colour == 'b' && !this.isKing && yOffset == 1) return null;
+
 			Cell toCell = board[this.position.getY()+yOffset][this.position.getX()+xOffset];
 			if (toCell.getPiece() == null) {
 				//Print the cell axis
@@ -46,6 +55,12 @@ public class CheckersPiece {
 
 	private Move getJumpOverMoveIfValid(Cell[][] board, int xOffset, int yOffset) {
 		if (!Cell.isValidCellPosition(this.position.getX()+xOffset, this.position.getY()+yOffset)) return null;
+
+		if (this.colour == 'w' && !this.isKing && yOffset == -2) return null;
+		if (this.colour == 'b' && !this.isKing && yOffset == 2) return null;
+
+		
+
 		Cell toCell = board[this.position.getY()+yOffset][this.position.getX()+xOffset];
 		if (toCell.getPiece() != null) return null;
 
@@ -62,7 +77,7 @@ public class CheckersPiece {
 		// if (cellToBeJumpOver!=null) System.out.println("Cell to be jumped over: " + cellToBeJumpOver.getX() + " " + cellToBeJumpOver.getY());
 		// if (cellToBeJumpOver == null) return null;
 		//if (cellToBeJumpOver.getPiece() == null) return null;
-		return new Move(this, toCell, cellToBeJumpOver.getPiece());
+		return new Move(this, toCell, cellToBeJumpOver.getPiece().getColour() != this.colour ? cellToBeJumpOver.getPiece() : null);
 
 	}
 	
@@ -108,10 +123,10 @@ public class CheckersPiece {
 		//promote this piece
 		this.isKing = true;
 	}
-	
-	//draw the piece
-	public void draw(App app) {
-		app.strokeWeight(5.0f);
+
+	private void drawAsKing(App app) {
+		//draw the piece as a king
+		app.strokeWeight(4.0f);
 		if (colour == 'w') {
 			app.fill(255);
 			app.stroke(0);
@@ -119,7 +134,30 @@ public class CheckersPiece {
 			app.fill(0);
 			app.stroke(255);
 		}
+
+		app.ellipse(position.getX()*App.CELLSIZE + App.CELLSIZE/2, position.getY()*App.CELLSIZE + App.CELLSIZE/2, App.CELLSIZE*0.4f, App.CELLSIZE*0.4f);
+		app.noStroke();
+	}
+
+	private void drawAsNormalPiece(App app) {
+		app.strokeWeight(5.0f);
+		if (colour == 'w') {
+			app.fill(255);
+		app.stroke(0);
+		
+		} else if (colour == 'b') {
+			app.fill(0);
+			app.stroke(255);
+		}
 		app.ellipse(position.getX()*App.CELLSIZE + App.CELLSIZE/2, position.getY()*App.CELLSIZE + App.CELLSIZE/2, App.CELLSIZE*0.8f, App.CELLSIZE*0.8f);
 		app.noStroke();
+	}
+	
+	//draw the piece
+	public void draw(App app) {
+	drawAsNormalPiece(app);
+		if (isKing) {
+			drawAsKing(app);
+		}
 	}
 }
