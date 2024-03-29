@@ -19,20 +19,6 @@ public class Cell {
 
 		this.board = board;
 
-		// if (x > 0) {
-		// 	if (y > 0) {
-		// 		this.neibourCells.add(new Cell(x-1, y-1));
-		// 		if (y > 1) {
-		// 			this.neibourCells.add(new Cell(x-2, y-2));
-		// 		}
-		// 	}
-		// 	if (y < 7) {
-		// 		this.neibourCells.add(new Cell(x-1, y+1));
-		// 		if (y < 6) {
-		// 			this.neibourCells.add(new Cell(x-2, y+2));
-		// 		}
-		// 	}
-		// }
 	}
 	
 	public int getX() {
@@ -61,107 +47,6 @@ public class Cell {
 	public boolean isCurrentUserSelectable() {
 		return this.availableMove != null;
 	}
-
-	public Set<NeibourCell> getNeibourCells() {
-
-
-		Set<NeibourCell> neibourCells = new HashSet<NeibourCell>();
-
-		// Normal moves
-
-		// TOP,LEFT
-
-		if (isValidCellPosition(this.x - 1, this.y - 1)) {
-			Cell toCell = this.board[this.y - 1][this.x - 1];
-			if (toCell.getPiece() == null) {
-				neibourCells.add(new NeibourCell(this, toCell, null));
-			}
-		}
-
-		// TOP,RIGHT
-		if (isValidCellPosition(this.x + 1, this.y - 1)) {
-			Cell toCell = this.board[this.y - 1][this.x + 1];
-			if (toCell.getPiece() == null) {
-				neibourCells.add(new NeibourCell(this, toCell, null));
-			}
-		}
-
-		// BOTTOM,LEFT
-
-		if (isValidCellPosition(this.x - 1, this.y + 1)) {
-			Cell toCell = this.board[this.y + 1][this.x - 1];
-			if (toCell.getPiece() == null) {
-				neibourCells.add(new NeibourCell(this, toCell, null));
-			}
-		}
-
-		// BOTTOM,RIGHT
-
-		if (isValidCellPosition(this.x + 1, this.y + 1)) {
-			Cell toCell = this.board[this.y + 1][this.x + 1];
-			if (toCell.getPiece() == null) {
-				neibourCells.add(new NeibourCell(this, toCell, null));
-			}
-		}
-
-		// Jump over moves
-
-		// TOP,LEFT
-		if (isValidCellPosition(this.x-2, this.y-2)) {
-			Cell toCell = this.board[this.y - 2][this.x - 2];
-
-
-			if (toCell.getPiece() == null && this.getJumpOVerCell(toCell).getPiece() != null){
-				Cell jumpOverCell = this.getJumpOVerCell(toCell);
-				neibourCells.add(new NeibourCell(this, toCell, jumpOverCell));
-			}
-		}
-
-		// TOP,RIGHT
-
-		if (isValidCellPosition(this.x+2, this.y-2)) {
-			Cell toCell = this.board[this.y - 2][this.x + 2];
-
-			if (toCell.getPiece() == null  && this.getJumpOVerCell(toCell).getPiece() != null) {
-				Cell jumpOverCell = this.getJumpOVerCell(toCell);
-				neibourCells.add(new NeibourCell(this, toCell, jumpOverCell));
-			}
-		}
-
-		// BOTTOM,LEFT
-
-		if (isValidCellPosition(this.x-2, this.y+2)) {
-			Cell toCell = this.board[this.y + 2][this.x - 2];
-
-			if (toCell.getPiece() == null  && this.getJumpOVerCell(toCell).getPiece() != null) {
-				Cell jumpOverCell = this.getJumpOVerCell(toCell);
-				neibourCells.add(new NeibourCell(this, toCell, jumpOverCell));
-			}
-		}
-
-		// BOTTOM,RIGHT
-
-		if (isValidCellPosition(this.x+2, this.y+2)) {
-			Cell toCell = this.board[this.y + 2][this.x + 2];
-
-			if (toCell.getPiece() == null  && this.getJumpOVerCell(toCell).getPiece() != null) {
-				Cell jumpOverCell = this.getJumpOVerCell(toCell);
-				neibourCells.add(new NeibourCell(this, toCell, jumpOverCell));
-			}
-		}
-
-
-		return neibourCells;
-		
-
-	}
-
-	public Cell getJumpOVerCell(Cell destinationCell) {
-		// Magic function for getting the cell that is jumped over
-		int x = (this.getX() + destinationCell.getX()) / 2;
-		int y = (this.getY() + destinationCell.getY()) / 2;
-		return this.board[y][x];
-	}
 	
 	public CheckersPiece getPiece() {
 		return this.piece;
@@ -177,10 +62,4 @@ public class Cell {
 		return x >= 0 && x < 8 && y >= 0 && y < 8;
 	}
 
-	// public static Cell getJumpOverCell(Cell start, Cell end) {
-	// 	// Magic function for getting the cell that is jumped over
-	// 	int x = (start.getX() + end.getX()) / 2;
-	// 	int y = (start.getY() + end.getY()) / 2;
-	// 	return new Cell(x, y);
-	// }
 }

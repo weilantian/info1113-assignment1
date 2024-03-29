@@ -10,6 +10,9 @@ import processing.event.MouseEvent;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+
+import javax.annotation.MatchesPattern.Checker;
+
 import java.awt.Font;
 import java.io.*;
 import java.util.*;
@@ -49,7 +52,6 @@ public class App extends PApplet {
 	/* --------------------------------------- */
 	private Cell[][] board;
 	private CheckersPiece currentSelected;
-	private HashSet<Cell> selectedCells;
 	private HashMap<Character, HashSet<CheckersPiece>> piecesInPlay = new HashMap<>();
 	private char currentPlayer = 'w';
 
@@ -58,6 +60,11 @@ public class App extends PApplet {
 
     public App() {
         
+    }
+
+    public void capturePiece(CheckersPiece piece) {
+        HashSet<CheckersPiece> pieces = piecesInPlay.get(piece.getColour());
+        pieces.remove(piece);
     }
 
     /**
@@ -94,6 +101,18 @@ public class App extends PApplet {
                         b.add(board[i][i2].getPiece());
                     }
                 }
+
+                // // Add one white piece to the board for testing
+                // if (i2 == 5 && i == 5) {
+                //     board[i][i2].setPiece(new CheckersPiece('w'));
+                //     w.add(board[i][i2].getPiece());
+                // }
+
+                // // Add one black piece to the board for testing
+                // if (i2 == 3 && i == 3) {
+                //     board[i][i2].setPiece(new CheckersPiece('b'));
+                //     b.add(board[i][i2].getPiece());
+                // }
             }
         }
     }
@@ -127,7 +146,7 @@ public class App extends PApplet {
 
              for (int i = 0; i < board.length; i++) {
                 for (int i2 = 0; i2 < board[i].length; i2++) {
-                    board[i][i2].setAvailableMove(null);
+                    board[i2][i].setAvailableMove(null);
                 }
             }
 
@@ -155,7 +174,12 @@ public class App extends PApplet {
 		} else if (clicked.isCurrentUserSelectable()) {
             // Execute the move
             Move move = clicked.getAvailableMove();
-            move.execute();
+            CheckersPiece captuedPiece =  move.execute();
+
+            if (captuedPiece != null) {
+                capturePiece(captuedPiece);
+            }
+            
             this.currentPlayer = this.currentPlayer == 'w' ? 'b' : 'w';
             
             for (int i = 0; i < board.length; i++) {
@@ -164,21 +188,11 @@ public class App extends PApplet {
                 }
             }
 
-            // Remove all captured pieces from piecesinplay
-            for (int i = 0; i < board.length; i++) {
-                for (int i2 = 0; i2 < board[i].length; i2++) {
-                    if (board[i][i2].getPiece() != null && board[i][i2].getPiece().isCaptured()) {
-                        piecesInPlay.get(board[i][i2].getPiece().getColour()).remove(board[i][i2].getPiece());
-                    }
-                }
-            }
+            
 
           
             
         }
-
-
-        
 		
 		//TODO: Check if user clicked on an available move - move the selected piece there. 
 		//TODO: Remove captured pieces from the board

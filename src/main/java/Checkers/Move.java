@@ -17,7 +17,8 @@ class Move {
         return this.destination;
     }
     
-    public void execute() {
+    // Return the piece that was captured if not captured, return null
+    public CheckersPiece execute() {
         if (this.capturedPiece != null) {
             this.capturedPiece.capture();
         }
@@ -25,11 +26,13 @@ class Move {
         this.piece.getPosition().setPiece(null);
         this.destination.setPiece(this.piece);
         // Check if a piece should be promoted to a king
-        if (this.piece.getColour() == 'w' && this.destination.getY() == 0) {
+        if (this.piece.getColour() == 'w' && this.destination.getY() == 7) {
             this.piece.promote();
-        } else if (this.piece.getColour() == 'b' && this.destination.getY() == 7) {
+        } else if (this.piece.getColour() == 'b' && this.destination.getY() == 0) {
             this.piece.promote();
         }
+
+        return this.capturedPiece;
     }
     
 
