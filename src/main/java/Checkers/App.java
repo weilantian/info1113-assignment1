@@ -123,27 +123,32 @@ public class App extends PApplet {
 		
 		Cell clicked = board[y/App.CELLSIZE][x/App.CELLSIZE];
 		if (clicked.getPiece() != null && clicked.getPiece().getColour() == currentPlayer) {
+
+
+             for (int i = 0; i < board.length; i++) {
+                for (int i2 = 0; i2 < board[i].length; i2++) {
+                    board[i][i2].setAvailableMove(null);
+                }
+            }
+
 			//valid piece to click
 			if (clicked.getPiece() == currentSelected) {
 				currentSelected = null;
 			} else {
 				currentSelected = clicked.getPiece();
+                  Set<Move> availableMoves = currentSelected.getAvailableMoves(board);
+
+            for (Move move : availableMoves) {
+                move.getDestination().setAvailableMove(move);
+            }
 			}
 			
 			//TODO: highlight available moves for current piece
 
             //Reset all cells to not be selectable
 
-            for (int i = 0; i < board.length; i++) {
-                for (int i2 = 0; i2 < board[i].length; i2++) {
-                    board[i][i2].setAvailableMove(null);
-                }
-            }
-            Set<Move> availableMoves = currentSelected.getAvailableMoves(board);
-
-            for (Move move : availableMoves) {
-                move.getDestination().setAvailableMove(move);
-            }
+           
+          
             
        
 
@@ -151,16 +156,37 @@ public class App extends PApplet {
             // Execute the move
             Move move = clicked.getAvailableMove();
             move.execute();
+            this.currentPlayer = this.currentPlayer == 'w' ? 'b' : 'w';
+            
+            for (int i = 0; i < board.length; i++) {
+                for (int i2 = 0; i2 < board[i].length; i2++) {
+                    board[i][i2].setAvailableMove(null);
+                }
+            }
+
+            // Remove all captured pieces from piecesinplay
+            for (int i = 0; i < board.length; i++) {
+                for (int i2 = 0; i2 < board[i].length; i2++) {
+                    if (board[i][i2].getPiece() != null && board[i][i2].getPiece().isCaptured()) {
+                        piecesInPlay.get(board[i][i2].getPiece().getColour()).remove(board[i][i2].getPiece());
+                    }
+                }
+            }
+
+          
             
         }
 
 
+        
 		
 		//TODO: Check if user clicked on an available move - move the selected piece there. 
 		//TODO: Remove captured pieces from the board
 
 		//TODO: Check if piece should be promoted and promote it
 		//TODO: Then it's the other player's turn.
+
+       
     }
 
     @Override
@@ -180,7 +206,6 @@ public class App extends PApplet {
 		for (int i = 0; i < board.length; i++) {
             for (int i2 = 0; i2 < board[i].length; i2++) {
 				//if cell is selected, highlight in green
-				//TODO: draw highlighted cells
 				if (currentSelected != null && board[i][i2].getPiece() == currentSelected) {
 					this.setFill(1, (i2+i) % 2);
 					this.rect(i2*App.CELLSIZE, i*App.CELLSIZE, App.CELLSIZE, App.CELLSIZE);
