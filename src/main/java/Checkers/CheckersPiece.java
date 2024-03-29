@@ -116,6 +116,7 @@ public class CheckersPiece {
 	public void capture() {
 		//capture this piece
 		this.isCaptured = true;
+		
 		this.position.setPiece(null);
 	}
 	
