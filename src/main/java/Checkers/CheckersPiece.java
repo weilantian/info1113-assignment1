@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class CheckersPiece {
-	private boolean isKing = true;
+	private boolean isKing = false;
 	private boolean isCaptured = false;
 	private char colour;
 	private Cell position;
